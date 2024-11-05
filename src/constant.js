@@ -20,3 +20,10 @@ export let cloudinaryConfig = {
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 }
+
+export let apiRootUrl = "/api/v1";
+
+export let cookiesOptions = {
+    httpOnly: true,
+    secure: true,
+}
