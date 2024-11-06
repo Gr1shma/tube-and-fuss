@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 import { cookiesOptions } from "../constant.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import mongoose from "mongoose";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 const generateAccessAndRefreshToken = async(userId) => {
@@ -194,16 +194,20 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     if(!avatar){
         new ApiError(400, "Error while uploading on avatar");
     }
-    const user = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set:{
-                avatar: avatar.url,
-            }
-        }, {
-            new: true,
-        }
-    ).select("-password");
+
+    const user = await User.findById(req.user?._id).select("-password");
+    if(!user){
+        throw new ApiError(400 ,"Unauthorized request");
+    }
+
+    const oldUserAvatarURL = user.avatar;
+
+    user.avatar = avatar.url;
+    user.save({validateBeforeSave: false}).then(await deleteFromCloudinary(oldUserAvatarURL)).catch(err => {
+        throw new ApiError(500, `Error while updating avatar\n${err}`);
+    })
+    
+
     return res.
         status(200).
         json(new ApiResponse(200, user, "Avatar updated Sucessfully"));
@@ -218,22 +222,23 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     if(!cover){
         new ApiError(400, "Error while uploading on avatar");
     }
-    const user = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set:{
-                coverImage: cover.url,
-            }
-        }, {
-            new: true,
-        }
-    ).select("-password");
+
+    const user = await User.findById(req.user?._id).select("-password");
+    if(!user){
+        throw new ApiError(400, "Unauthorized Request");
+    }
+
+    const oldUserCoverImageUrl = user.coverImage;
+
+    user.coverImage = cover.url; 
+    await user.save({validateBeforeSave: false}).then(await deleteFromCloudinary(oldUserCoverImageUrl)).catch(err => {
+        throw new ApiError(`Error while updating cover image\n ${err}`);
+    });
+
     return res.
         status(200).
         json(new ApiResponse(200, user, "Avatar updated Sucessfully"));
 })
-
-// TODO: Delete the old avatar and cover image after the sucessfully updated;
 
 const getUserChannelProfile = asyncHandler(async(req, res) => {
     const { username } = req.params
