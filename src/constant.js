@@ -4,12 +4,12 @@ export let corsOptions = {
     origin: process.env.CORS_ORIGIN,
 }
 export let expressJsonOption = {
-    limits: "100kb"
+    limits: "50mb"
 }
 export let expressStaticRoot = "public";
 export let expressUrlEncodedOptions = {
     extended: true,
-    limits: "100kb"
+    limits: "50mb"
 }
 
 // bcrypt

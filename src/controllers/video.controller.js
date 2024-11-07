@@ -1,12 +1,14 @@
 import mongoose, {isValidObjectId} from "mongoose"
+
 import {Video} from "../models/video.model.js"
 import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
+import { Like } from "../models/like.model.js"
+import { Comment } from "../models/comment.model.js"
+
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {deleteFromCloudinary, uploadOnCloudinary} from "../utils/cloudinary.js"
-import { Like } from "../models/like.model.js"
-
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
@@ -71,7 +73,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
             }
         },
         {
-            $unwing: "$ownerDetails"
+            $unwind: "$ownerDetails"
         }
     )
 
@@ -216,7 +218,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         }
     ])
 
-    if(!video){
+    if(!video[0]){
         throw new ApiError(500, "Error while fetching video from database");
     }
 
@@ -248,13 +250,18 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Requested user is not video owner");
     }
 
-    const {title , description } = req.body;
+    const {title , description} = req.body;
     
-    const thumbnail = req.files.path;
+    const thumbnail = req.file?.path;
 
-    if(!thumbnail || !title || !description){
+    if(!(title && description)){
         throw new apierror(400, "all field is required");
     }
+
+    if (!thumbnail) {
+        throw new ApiError(400, "thumbnail is required");
+    }
+
 
     const thumbnailCloudinary = await uploadOnCloudinary(thumbnail);
 
@@ -280,6 +287,9 @@ const deleteVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video Id is requiredred");
     }        
     let video = await Video.findById(videoId);
+    
+    console.log(video)
+    console.log(req.user?._id.toString())
 
     if(video?.owner.toString() !== req.user?._id.toString()){
         throw new ApiError(401, "Requested user is not video owner");
