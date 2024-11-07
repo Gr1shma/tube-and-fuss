@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import { saltRound } from "../constant.js";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const userSchema = new Schema({
     username: {
@@ -79,5 +80,7 @@ userSchema.methods.generateRefreshToken = function(){
         }
     )
 }
+
+userSchema.plugin(mongooseAggregatePaginate);
 
 export const User = mongoose.model("User", userSchema)

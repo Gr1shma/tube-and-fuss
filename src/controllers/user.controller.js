@@ -203,7 +203,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     const oldUserAvatarURL = user.avatar;
 
     user.avatar = avatar.url;
-    user.save({validateBeforeSave: false}).then(await deleteFromCloudinary(oldUserAvatarURL)).catch(err => {
+    user.save({validateBeforeSave: false}).then(await deleteFromCloudinary(oldUserAvatarURL, true)).catch(err => {
         throw new ApiError(500, `Error while updating avatar\n${err}`);
     })
     
