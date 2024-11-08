@@ -43,7 +43,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id,
     })
 
-    if(video){
+    if(comment){
         await Like.findByIdAndDelete(comment?._id);
         return res.
             status(200).
@@ -64,7 +64,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     const {tweetId} = req.params
 
     if(!isValidObjectId(tweetId)){
-        throw new ApiError(400, "Invalid video id");
+        throw new ApiError(400, "Invalid tweet id");
     }
 
     const tweet = await Like.findOne({
@@ -72,7 +72,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         likedBy: req.user?._id,
     })
 
-    if(video){
+    if(tweet){
         await Like.findByIdAndDelete(tweet?._id);
         return res.
             status(200).
