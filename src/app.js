@@ -17,10 +17,12 @@ import userRouter from "./routes/user.routes.js";
 import videoRouter from "./routes/video.routes.js";
 import likeRouter from "./routes/like.routes.js";
 import tweetRouter from "./routes/tweet.routes.js";
+import commentRouter from "./routes/comment.routes.js";
 
 app.use(`${apiRootUrl}/users`, userRouter);
 app.use(`${apiRootUrl}/videos`, videoRouter);
 app.use(`${apiRootUrl}/likes`, likeRouter);
 app.use(`${apiRootUrl}/tweets`, tweetRouter);
+app.use(`${apiRootUrl}/comments`, commentRouter);
 
 export { app };

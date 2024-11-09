@@ -75,7 +75,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         }
     )
 
-    const videoAggregate = Video.aggregate(pipeline);
+    const videoAggregate = await Video.aggregate(pipeline);
 
     const options = {
         page: parseInt(page, 10),
@@ -83,7 +83,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
     };
 
     const video = await Video.aggregatePaginate(videoAggregate, options);
-
     return res.
         status(200).
         json(new ApiResponse(200, video, "Video fetched sucessfully"));
@@ -205,7 +204,6 @@ const getVideoById = asyncHandler(async (req, res) => {
                     $first: "$owner",
                 },
                 isLiked: {
-                    
                     $cond: {
                         if: {$in: [req.user?._id, "$likes.likedBy"]},
                         then: true,
