@@ -4,20 +4,55 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { Like } from "../models/like.model.js"
+import { Video } from "../models/video.model.js";
 
-// TODO: This controller is not working and need to be resolved
 const getVideoComments = asyncHandler(async (req, res) => {
-    const {videoId} = req.params
-    const {page = 1, limit = 10} = req.query
+    const { videoId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
 
-    if(!isValidObjectId(videoId)){
-        throw new ApiError(400, "Invalid video id");
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, "Video not found");
     }
 
-    const commentsAggregate = await Comment.aggregate([
+    const commentsAggregate = Comment.aggregate([
         {
             $match: {
                 video: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "comment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                likesCount: {
+                    $size: "$likes"
+                },
+                owner: {
+                    $first: "$owner"
+                },
+                isLiked: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$likes.likedBy"] },
+                        then: true,
+                        else: false
+                    }
+                }
             }
         },
         {
@@ -26,80 +61,33 @@ const getVideoComments = asyncHandler(async (req, res) => {
             }
         },
         {
-            $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "ownerDetails",
-                pipeline: [
-                    {
-                        $project: {
-                            username: 1,
-                            fullName: 1,
-                            avatar: 1,
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $lookup: {
-                from: "likes",
-                localField: "_id",
-                foreignField: "comment",
-                as: "likes",
-            }
-        },
-        {
-            $addFields: {
-                likesCount: {
-                    $size: "$likes"
-                },
-                isLiked: {
-                    $cond: {
-                        if: { $in: [req.user?._id, "$likes.likedBy"] },
-                        then: true,
-                        else: false
-                    }
-                },
-                owner: {
-                    $first: "$ownerDetails"
-                }
-            }
-        },
-        {
             $project: {
-                ownerDetails: 1,
-                isLiked: 1,
-                likesCount: 1,
                 content: 1,
                 createdAt: 1,
+                likesCount: 1,
+                owner: {
+                    username: 1,
+                    fullName: 1,
+                    avatar: 1
+                },
+                isLiked: 1
             }
         }
     ]);
-
-    if(!commentsAggregate){
-        throw new ApiError(500, "Error while aggregating comment");
-    }
-
 
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10)
     };
 
-    console.log(commentsAggregate);
-
-    const comments = await Comment.aggregatePaginate(commentsAggregate,options);
-
-
-    if(!comments){
-       throw new ApiError(500, "Error while pagenating comment");
-    }
+    const comments = await Comment.aggregatePaginate(
+        commentsAggregate,
+        options
+    );
 
     return res.
         status(200).
-        json(new ApiError(200, comments, "Comment fetched sucessfully"));
+        json(new ApiResponse(200, comments, "Comments fetched successfully"));
 })
 
 
