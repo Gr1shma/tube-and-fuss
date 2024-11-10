@@ -19,6 +19,7 @@ import likeRouter from "./routes/like.routes.js";
 import tweetRouter from "./routes/tweet.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import subscriptionRouter from "./routes/subscription.routes.js"
+import playlistRouter from "./routes/playlist.routes.js"
 
 app.use(`${apiRootUrl}/users`, userRouter);
 app.use(`${apiRootUrl}/videos`, videoRouter);
@@ -26,5 +27,6 @@ app.use(`${apiRootUrl}/likes`, likeRouter);
 app.use(`${apiRootUrl}/tweets`, tweetRouter);
 app.use(`${apiRootUrl}/comments`, commentRouter);
 app.use(`${apiRootUrl}/subscriptions`, subscriptionRouter);
+app.use(`${apiRootUrl}/playlist`, playlistRouter);
 
 export { app };
