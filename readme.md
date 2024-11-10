@@ -56,7 +56,7 @@ tube-and-fuss provides a backend platform where users can share video-based twee
 
 [model link](https://app.eraser.io/workspace/ytpqz1vogxgy1jzidkzj?origin=share)
 
-[db image](db-schema.png)
+![db image](db-schema.png)
 
 
 ## run locally
@@ -90,27 +90,27 @@ start the server
 
 to run this project, you will need to add the following environment variables to your .env file
 
-`port`
+`PORT`
 
-`cors_origin`
+`CORS_ORIGIN`
 
-`mongodb_uri`
+`MONGODB_URI`
 
-`access_token_secret`
+`ACCESS_TOKEN_SECRET`
 
-`access_token_expiry`
+`ACCESS_TOKEN_EXPIRY`
 
-`refresh_token_secret`
+`REFRESH_TOKEN_SECRET`
 
-`refresh_token_expiry`
+`REFRESH_TOKEN_EXPIRY`
 
-`cloudinary_cloud_name`
+`CLOUDINARY_CLOUD_NAME`
 
-`cloudinary_api_key`
+`CLOUDINARY_API_KEY`
 
-`cloudinary_api_secret`
+`CLOUDINARY_API_SECRET`
 
-`cloudinary_url`
+`CLOUDINARY_URL`
 
 
 ## acknowledgements
