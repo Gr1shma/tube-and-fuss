@@ -7,7 +7,7 @@ import { User } from "../models/user.model.js"
 import { Video } from "../models/video.model.js"
 
 const createPlaylist = asyncHandler(async (req, res) => {
-    const {name, description} = req.body;
+    const { name, description } = req.body;
 
     if(!name || !description){
         throw new ApiError(400, "Playlist name and description is required");
@@ -285,8 +285,8 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {
-    const {playlistId} = req.params
-    const {name, description} = req.body
+    const { playlistId } = req.params
+    const { name, description } = req.body
     if(name.toString() === "" || description.toString() === ""){
         throw new ApiError(400, "name and description both are required");
     }

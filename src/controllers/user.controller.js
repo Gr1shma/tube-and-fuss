@@ -25,7 +25,7 @@ const generateAccessAndRefreshToken = async(userId) => {
 }
 
 const registerUser = asyncHandler( async(req, res) => {
-    const {fullName, username, email, password} = req.body;
+    const { fullName, username, email, password } = req.body;
     if([email, username, fullName, password].some((field) => field.trim() === "")){
         throw new ApiError(400, "All fields are required");
     }
@@ -76,7 +76,7 @@ const loginUser = asyncHandler( async(req, res) => {
     if(!isPasswordCorrect){
         throw new ApiError(400, "Given Password is incorrect");
     }
-    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
     return res.
         status(200).
@@ -142,7 +142,7 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 })
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const {oldPassword, newPassword} = req.body;
+    const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user?._id);
 
@@ -165,7 +165,7 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const {fullName, email} = req.body;
+    const { fullName, email } = req.body;
     if(!fullName || !email){
         throw new ApiError(400, "All fields are required");
     }
