@@ -115,4 +115,4 @@ to run this project, you will need to add the following environment variables to
 
 ## acknowledgements
 
- - [chai aur javascript backend | hindi](https://youtube.com/playlist?list=plu71skxnbfobgh_8p_ns-zah6v7hhyqhw&si=qphllleaciiso9zd)
+ - [chai aur javascript backend | hindi](https://youtube.com/playlist?list=PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW&si=kl1jyZzouQ7x9ixH)
